@@ -1,2 +1,7 @@
-flask
-pyfhel
+services:
+  - type: web
+    name: fhe-demo
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
