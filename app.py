@@ -1,9 +1,9 @@
 from flask import Flask
 from Pyfhel import Pyfhel
-import os
 
 app = Flask(__name__)
 
+# FHE setup (run once)
 HE = Pyfhel()
 HE.contextGen(p=65537)
 HE.keyGen()
@@ -12,13 +12,14 @@ HE.keyGen()
 def home():
     return """
     <h1>FHE Demo</h1>
-    <a href="/run">Click to Run Encrypted Calculation</a>
+    <p>This is a Fully Homomorphic Encryption demo</p>
+    <a href="/run">Click here to run encrypted calculation</a>
     """
 
 @app.route("/run")
-def run():
-    a = 15
-    b = 25
+def run_fhe():
+    a = 10
+    b = 20
 
     enc_a = HE.encryptInt(a)
     enc_b = HE.encryptInt(b)
@@ -27,6 +28,3 @@ def run():
     result = HE.decryptInt(enc_sum)
 
     return f"<h2>Encrypted Result: {result}</h2>"
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
