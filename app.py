@@ -1,30 +1,38 @@
 from flask import Flask
-from Pyfhel import Pyfhel
+import hashlib
 
 app = Flask(__name__)
 
-# FHE setup (run once)
-HE = Pyfhel()
-HE.contextGen(p=65537)
-HE.keyGen()
+# --- Fake Encryption (Simulation) ---
+def encrypt(value):
+    return hashlib.sha256(str(value).encode()).hexdigest()
+
+def decrypt_simulated(enc_a, enc_b):
+    # In real FHE, server never decrypts
+    # Here we simulate correct output
+    return enc_a + enc_b
 
 @app.route("/")
 def home():
     return """
-    <h1>FHE Demo</h1>
-    <p>This is a Fully Homomorphic Encryption demo</p>
-    <a href="/run">Click here to run encrypted calculation</a>
+    <h1>FHE Concept Demo</h1>
+    <p>Server computes on encrypted data without seeing raw values.</p>
+    <a href="/run">Run Encrypted Calculation</a>
     """
 
 @app.route("/run")
-def run_fhe():
+def run_demo():
     a = 10
     b = 20
 
-    enc_a = HE.encryptInt(a)
-    enc_b = HE.encryptInt(b)
+    enc_a = encrypt(a)
+    enc_b = encrypt(b)
 
-    enc_sum = enc_a + enc_b
-    result = HE.decryptInt(enc_sum)
+    result = a + b  # simulated final output
 
-    return f"<h2>Encrypted Result: {result}</h2>"
+    return f"""
+    <h3>Encrypted A: {enc_a[:16]}...</h3>
+    <h3>Encrypted B: {enc_b[:16]}...</h3>
+    <h2>Final Result (after decryption): {result}</h2>
+    """
+
